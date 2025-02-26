@@ -1,0 +1,50 @@
+Updates v1.01
+
+# Auto Page Refresher Extension Update 1.01
+
+## New Features & Improvements
+
+### Timer Controls
+- **Simplified Timer Management**: Replaced dual-button system with a single "Start Timer" button
+- **Instant Timer Override**: New timer starts immediately without needing to stop the current one
+- **Improved Reliability**: More robust timer handling and state management
+
+### User Interface
+- **Modernized Design**:
+  - Added subtle shadows and hover effects
+  - Improved button layouts and spacing
+  - Enhanced visual feedback for interactions
+- **Streamlined Controls**:
+  - Combined timer controls into a single row
+  - Clearer button labeling
+  - More intuitive timer management
+
+### Visual Feedback
+- **Active Timer Display**:
+  - Added dedicated section showing current timer duration
+  - Clear indication when timer is running
+  - Easy to read time format (e.g., "Running: 5m 30s")
+
+### Dark Mode
+- Refined dark mode colors and contrasts
+- Improved dark mode transitions
+- Better visibility for all UI elements in both light and dark modes
+
+### Technical Improvements
+- More reliable timer persistence
+- Better handling of page refreshes
+- Improved timer display consistency
+- Enhanced state management
+
+## Bug Fixes
+- Fixed issue where timer wouldn't properly override when starting a new duration
+- Resolved timer display inconsistencies after page refreshes
+- Fixed dark mode transition glitches
+
+## Coming in Future Updates
+- Custom presets for frequently used times
+- Additional quick-select time options
+- More customization options
+
+---
+*Thank you for using Auto Page Refresher! We're committed to making your experience better with each update.*
