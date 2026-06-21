@@ -34,6 +34,18 @@ function fmt(kmh) {
   return Math.round(convert(kmh));
 }
 
+// Temperature: API returns Celsius; convert client-side so the °C/°F toggle
+// never needs another network request.
+function fmtTemp(celsius) {
+  if (celsius == null) return "—";
+  const v = el("temp-select").value === "f" ? celsius * 9 / 5 + 32 : celsius;
+  return Math.round(v);
+}
+
+function tempUnitLabel() {
+  return el("temp-select").value === "f" ? "°F" : "°C";
+}
+
 // Compass direction from degrees (meteorological: direction wind comes FROM).
 function compass(deg) {
   const dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
@@ -157,6 +169,10 @@ el("unit-select").addEventListener("change", () => {
   if (lastData) render(lastData, lastPlace);
 });
 
+el("temp-select").addEventListener("change", () => {
+  if (lastData) render(lastData, lastPlace);
+});
+
 // ---- Forecast ---------------------------------------------------------------
 
 async function loadForecast(lat, lon, placeName) {
@@ -164,10 +180,10 @@ async function loadForecast(lat, lon, placeName) {
   try {
     const url =
       `${FORECAST_URL}?latitude=${lat}&longitude=${lon}` +
-      `&current=wind_speed_10m,wind_gusts_10m,wind_direction_10m` +
-      `&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m` +
-      `&daily=wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant` +
-      `&wind_speed_unit=kmh&timezone=auto&forecast_days=7`;
+      `&current=temperature_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m,wind_direction_10m` +
+      `&hourly=temperature_2m,wind_speed_10m,wind_gusts_10m,wind_direction_10m` +
+      `&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant` +
+      `&wind_speed_unit=kmh&temperature_unit=celsius&timezone=auto&forecast_days=7`;
     const data = await fetchJSON(url);
     lastData = data;
     lastPlace = placeName;
@@ -187,6 +203,12 @@ function render(data, placeName) {
 function renderCurrent(data, placeName) {
   const c = data.current;
   el("place-name").textContent = placeName;
+  el("temp-value").textContent = fmtTemp(c.temperature_2m);
+  el("temp-unit").textContent = tempUnitLabel();
+  el("feels-like").textContent =
+    c.apparent_temperature != null
+      ? `Feels like ${fmtTemp(c.apparent_temperature)}${tempUnitLabel()}`
+      : "";
   el("wind-speed").textContent = fmt(c.wind_speed_10m);
   el("wind-gust").textContent = fmt(c.wind_gusts_10m);
   el("speed-unit").textContent = unitLabel();
@@ -222,6 +244,7 @@ function renderHourly(data) {
     const arrowDeg = h.wind_direction_10m[i] + 180;
     div.innerHTML =
       `<div class="t">${time.toLocaleTimeString([], { hour: "2-digit" })}</div>` +
+      `<div class="temp">${fmtTemp(h.temperature_2m[i])}${tempUnitLabel()}</div>` +
       `<div class="a" style="transform:rotate(${arrowDeg}deg)">↑</div>` +
       `<div class="v">${fmt(h.wind_speed_10m[i])}</div>` +
       `<div class="g">gust ${fmt(h.wind_gusts_10m[i])}</div>`;
@@ -241,8 +264,10 @@ function renderDaily(data) {
     const name = i === 0 ? "Today" : date.toLocaleDateString([], { weekday: "short" });
     const div = document.createElement("div");
     div.className = "day";
+    const tu = tempUnitLabel();
     div.innerHTML =
       `<div class="name">${name}</div>` +
+      `<div><span class="label">Temp</span><br><span class="big">${fmtTemp(d.temperature_2m_max[i])}°</span> <small>/ ${fmtTemp(d.temperature_2m_min[i])}${tu}</small></div>` +
       `<div><span class="label">Max wind</span><br><span class="big">${fmt(d.wind_speed_10m_max[i])}</span> <small>${u}</small></div>` +
       `<div class="label-min"><span class="label">Max gust</span><br><span class="big">${fmt(d.wind_gusts_10m_max[i])}</span> <small>${u}</small></div>` +
       `<div class="a" title="Dominant direction">${compass(d.wind_direction_10m_dominant[i])}</div>`;

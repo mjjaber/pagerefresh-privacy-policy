@@ -10,10 +10,12 @@ A tiny, dependency-free web app that shows the **current wind speed** and a
 
 ## What it shows
 
+- Current temperature and "feels like" (apparent) temperature
 - Current wind speed, gusts, and direction (with a rotating compass arrow)
 - Beaufort-scale description (e.g. "Fresh breeze")
-- Hourly wind for the next 24 hours
-- Daily max wind, max gust, and dominant direction for 7 days
+- Hourly temperature + wind for the next 24 hours
+- Daily high/low temperature, max wind, max gust, and dominant direction for 7 days
+- Unit toggles: wind (km/h, m/s, mph, knots) and temperature (°C / °F)
 
 ## Running it
 

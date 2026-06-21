@@ -122,6 +122,8 @@ body {
   gap: 6px;
 }
 .metric--main { background: linear-gradient(135deg, #0ea5e9, #0369a1); color: #f0f9ff; }
+.metric--temp { background: linear-gradient(135deg, #f97316, #ea580c); color: #fff7ed; }
+.feels-like { color: var(--muted); font-size: 0.82rem; }
 .metric-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.85; }
 .metric-value { font-size: 1.8rem; font-weight: 700; display: flex; align-items: baseline; gap: 6px; }
 .metric-value small { font-size: 0.8rem; font-weight: 500; opacity: 0.8; }
@@ -150,6 +152,7 @@ body {
   min-width: 78px;
 }
 .hour .t { color: var(--muted); font-size: 0.78rem; }
+.hour .temp { font-size: 0.95rem; font-weight: 700; color: #fb923c; margin-top: 4px; }
 .hour .v { font-size: 1.15rem; font-weight: 700; margin: 6px 0 2px; }
 .hour .a { font-size: 1.1rem; }
 .hour .g { color: var(--muted); font-size: 0.72rem; }
@@ -160,7 +163,7 @@ body {
 }
 .day {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr auto;
+  grid-template-columns: 0.9fr 1.1fr 1fr 1fr auto;
   align-items: center;
   gap: 10px;
   background: var(--card);
@@ -194,6 +197,6 @@ body {
 
 @media (max-width: 480px) {
   .header h1 { font-size: 1.8rem; }
-  .day { grid-template-columns: 1fr 1fr auto; }
+  .day { grid-template-columns: 0.9fr 1fr 1fr auto; }
   .day .label-min { display: none; }
 }

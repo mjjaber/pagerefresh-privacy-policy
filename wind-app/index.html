@@ -30,10 +30,17 @@
 
     <section id="current" class="current" hidden>
       <div class="current-head">
-        <h2 id="place-name">—</h2>
+        <div>
+          <h2 id="place-name">—</h2>
+          <span id="feels-like" class="feels-like"></span>
+        </div>
         <span id="updated" class="updated"></span>
       </div>
       <div class="current-grid">
+        <div class="metric metric--temp">
+          <span class="metric-label">Temperature</span>
+          <span class="metric-value"><span id="temp-value">—</span><small id="temp-unit">°C</small></span>
+        </div>
         <div class="metric metric--main">
           <span class="metric-label">Wind speed</span>
           <span class="metric-value"><span id="wind-speed">—</span><small id="speed-unit">km/h</small></span>
@@ -68,12 +75,19 @@
 
     <footer class="footer">
       <label class="unit-toggle">
-        Units:
+        Wind:
         <select id="unit-select">
           <option value="kmh">km/h</option>
           <option value="ms">m/s</option>
           <option value="mph">mph</option>
           <option value="kn">knots</option>
+        </select>
+      </label>
+      <label class="unit-toggle">
+        Temp:
+        <select id="temp-select">
+          <option value="c">°C</option>
+          <option value="f">°F</option>
         </select>
       </label>
       <span>Data: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></span>
