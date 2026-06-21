@@ -34,6 +34,11 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          # Attempt to auto-enable Pages via the workflow token so no manual
+          # repo setting is required. Falls back to a clear error if the
+          # account/org policy disallows it.
+          enablement: true
 
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
