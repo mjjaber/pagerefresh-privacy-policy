@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WindNow — Wind Speed &amp; Forecast</title>
+<meta name="description" content="Check current wind speed and a multi-day wind forecast for any location. Free, no sign-up." />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <h1>💨 WindNow</h1>
+      <p class="tagline">Live wind speed &amp; forecast — powered by Open-Meteo (free, no API key)</p>
+    </header>
+
+    <form id="search-form" class="search" autocomplete="off">
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Search a city (e.g. London, Tokyo)…"
+        aria-label="Search a city"
+      />
+      <button type="submit" id="search-btn">Search</button>
+      <button type="button" id="geo-btn" title="Use my location">📍</button>
+    </form>
+    <ul id="suggestions" class="suggestions" hidden></ul>
+
+    <section id="status" class="status">Search for a city or tap 📍 to use your location.</section>
+
+    <section id="current" class="current" hidden>
+      <div class="current-head">
+        <h2 id="place-name">—</h2>
+        <span id="updated" class="updated"></span>
+      </div>
+      <div class="current-grid">
+        <div class="metric metric--main">
+          <span class="metric-label">Wind speed</span>
+          <span class="metric-value"><span id="wind-speed">—</span><small id="speed-unit">km/h</small></span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Gusts</span>
+          <span class="metric-value"><span id="wind-gust">—</span><small>km/h</small></span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Direction</span>
+          <span class="metric-value">
+            <span id="wind-arrow" class="arrow">↑</span>
+            <span id="wind-dir">—</span>
+          </span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Description</span>
+          <span class="metric-value metric-value--text" id="beaufort">—</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="hourly" class="forecast" hidden>
+      <h3>Next 24 hours</h3>
+      <div id="hourly-list" class="hourly-list"></div>
+    </section>
+
+    <section id="daily" class="forecast" hidden>
+      <h3>7-day outlook</h3>
+      <div id="daily-list" class="daily-list"></div>
+    </section>
+
+    <footer class="footer">
+      <label class="unit-toggle">
+        Units:
+        <select id="unit-select">
+          <option value="kmh">km/h</option>
+          <option value="ms">m/s</option>
+          <option value="mph">mph</option>
+          <option value="kn">knots</option>
+        </select>
+      </label>
+      <span>Data: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></span>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
