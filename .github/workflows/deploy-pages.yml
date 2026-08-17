@@ -1,13 +1,14 @@
 name: Deploy to GitHub Pages
 
-# Publishes the repository (including the WindNow app under /wind-app) to
-# GitHub Pages. The wind app will be available at:
+# Publishes the repository to GitHub Pages. Apps live in sub-directories:
 #   https://<owner>.github.io/<repo>/wind-app/
+#   https://<owner>.github.io/<repo>/rcfz-content-radar/
 on:
   push:
     branches:
       - main
       - claude/new-session-57a1sz
+      - claude/rcfz-content-radar-pwa-fcqwdc
   workflow_dispatch:
 
 # Permissions required by the Pages deployment actions.

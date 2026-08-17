@@ -1,0 +1,9 @@
+# Personal data must never be committed — the repo holds the app only.
+*backup*.json
+*seed*.json
+rcfz-*-export*.json
+
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
