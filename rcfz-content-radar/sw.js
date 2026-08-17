@@ -2,7 +2,7 @@
    back to index.html for navigations so the app opens offline and never 404s.
    Bump CACHE_VERSION whenever any precached file changes. */
 
-const CACHE_VERSION = 'v1.1.0';
+const CACHE_VERSION = 'v1.2.0';
 const CACHE_NAME = `rcfz-radar-${CACHE_VERSION}`;
 
 /* Relative to the service worker scope, so the app works from any sub-path. */
@@ -10,6 +10,7 @@ const PRECACHE = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './data/starter-creators.json',
   './css/styles.css',
   './js/app.js',
   './js/router.js',

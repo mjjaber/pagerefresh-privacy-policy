@@ -69,7 +69,13 @@ async function runImport(text, sourceLabel, refresh) {
     toast(`Replaced · ${res.creators} creators, ${res.videos} videos`, 'ok');
   } else {
     const res = await store.importMerge(payload);
-    toast(`Merged · ${res.creators} creators, ${res.videos} videos`, 'ok');
+    toast(
+      res.creators || res.videos
+        ? `Merged · ${res.creators} creators, ${res.videos} videos`
+          + (res.skipped ? ` · ${res.skipped} already here` : '')
+        : 'Everything in that file is already on this device',
+      'ok',
+    );
   }
 
   await store.setMeta('lastImportAt', new Date().toISOString());
@@ -161,6 +167,8 @@ export function render() {
       </div>
 
       <div class="stack" style="margin-top:12px">
+        <button type="button" class="btn tele" data-act="starter">
+          ${ICONS.download}<span>Load Starter Creators</span></button>
         <button type="button" class="btn quiet" data-act="bulk-add">
           ${ICONS.creators}<span>Bulk Add Creators</span></button>
         <button type="button" class="btn quiet" data-act="categories">
@@ -236,6 +244,15 @@ export function render() {
           fileInput.click();
         } else if (act === 'import-paste') {
           pasteSheet(refresh);
+        } else if (act === 'starter') {
+          // Shipped with the app and precached, so this works offline too.
+          try {
+            const res = await fetch('./data/starter-creators.json');
+            if (!res.ok) throw new Error(String(res.status));
+            await runImport(await res.text(), 'starter-creators.json', refresh);
+          } catch {
+            toast('Could not load the starter list', 'bad');
+          }
         } else if (act === 'bulk-add') {
           const { openBulkAdd } = await import('./../bulkadd.js');
           const added = await openBulkAdd();

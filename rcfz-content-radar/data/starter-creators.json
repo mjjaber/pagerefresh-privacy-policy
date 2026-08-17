@@ -1,0 +1,138 @@
+{
+  "note": "Starter creator list for RCFZ Content Radar. Load it from Settings → Load Starter Creators. Public profile links only; no saved videos, notes or workflow data.",
+  "updated": "2026-08-17",
+  "creators": [
+    {
+      "name": "Hangar Dubai",
+      "platform": "facebook",
+      "profileUrl": "https://www.facebook.com/p/HangarDubai-61566549557208/",
+      "username": "HangarDubai",
+      "creditHandle": "HangarDubai",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "Long Giang",
+      "platform": "facebook",
+      "profileUrl": "https://www.facebook.com/Longgiang.238",
+      "username": "Longgiang.238",
+      "creditHandle": "Longgiang.238",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "Pingkapong",
+      "platform": "facebook",
+      "profileUrl": "https://www.facebook.com/pingkapong.punaime",
+      "username": "pingkapong.punaime",
+      "creditHandle": "pingkapong.punaime",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "Duong Minh Quang",
+      "platform": "facebook",
+      "profileUrl": "https://www.facebook.com/duongminhquang222",
+      "username": "duongminhquang222",
+      "creditHandle": "duongminhquang222",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "W. Migues",
+      "platform": "facebook",
+      "profileUrl": "https://www.facebook.com/wmigues",
+      "username": "wmigues",
+      "creditHandle": "wmigues",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "Unnamed Profile",
+      "platform": "facebook",
+      "profileUrl": "https://www.facebook.com/profile.php?id=61584298411923",
+      "username": "",
+      "creditHandle": "",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "Sakda Phum Praphanth",
+      "platform": "facebook",
+      "profileUrl": "https://www.facebook.com/sakda.phum.praphanth",
+      "username": "sakda.phum.praphanth",
+      "creditHandle": "sakda.phum.praphanth",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "Ryan Plod",
+      "platform": "tiktok",
+      "profileUrl": "https://www.tiktok.com/@ryanplod",
+      "username": "ryanplod",
+      "creditHandle": "ryanplod",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "Marcelo RC Aircraft",
+      "platform": "tiktok",
+      "profileUrl": "https://www.tiktok.com/@marcelorcaircraft",
+      "username": "marcelorcaircraft",
+      "creditHandle": "marcelorcaircraft",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "The FPV Network",
+      "platform": "tiktok",
+      "profileUrl": "https://www.tiktok.com/@thefpvnetwork",
+      "username": "thefpvnetwork",
+      "creditHandle": "thefpvnetwork",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "Dam Cong",
+      "platform": "tiktok",
+      "profileUrl": "https://www.tiktok.com/@damcong",
+      "username": "damcong",
+      "creditHandle": "damcong",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    },
+    {
+      "name": "Kolbe Villa",
+      "platform": "youtube",
+      "profileUrl": "https://www.youtube.com/@kolbevilla",
+      "username": "kolbevilla",
+      "creditHandle": "kolbevilla",
+      "permission": "approved",
+      "priority": "normal",
+      "checkFrequency": "weekly",
+      "lastChecked": null
+    }
+  ]
+}

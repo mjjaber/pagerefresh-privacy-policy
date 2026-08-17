@@ -365,13 +365,49 @@ function metaRecordsFrom(payload, existingCustom = []) {
   return records;
 }
 
-/** Add/overwrite by id, keeping everything already stored. */
+const urlKey = (u) => String(u || '').trim().replace(/\/+$/, '').toLowerCase();
+
+/**
+ * Add/update by id, keeping everything already stored.
+ *
+ * Seed files carry no ids, so a plain by-id merge would re-add the same
+ * creators on every import. Records whose id is unknown but whose link already
+ * exists locally are treated as already present and skipped — importing twice
+ * is a no-op, and a creator's own check history is never reset by a seed.
+ */
 export async function importMerge(payload) {
+  const creatorsByUrl = new Map();
+  for (const c of cache.creators.values()) {
+    const key = urlKey(c.profileUrl);
+    if (key) creatorsByUrl.set(key, c.id);
+  }
+  const videosByUrl = new Map();
+  for (const v of cache.videos.values()) {
+    const key = urlKey(v.url);
+    if (key) videosByUrl.set(key, v.id);
+  }
+
+  const creators = payload.creators.filter((c) => {
+    if (cache.creators.has(c.id)) return true;            // same record → update it
+    const key = urlKey(c.profileUrl);
+    return !(key && creatorsByUrl.has(key));              // same link → already here
+  });
+  const videos = payload.videos.filter((v) => {
+    if (cache.videos.has(v.id)) return true;
+    const key = urlKey(v.url);
+    return !(key && videosByUrl.has(key));
+  });
+
   const meta = metaRecordsFrom(payload, getMeta('customCategories', []) || []);
-  await db.mergeAll({ creators: payload.creators, videos: payload.videos, meta });
+  await db.mergeAll({ creators, videos, meta });
   await init();
   emit();
-  return { creators: payload.creators.length, videos: payload.videos.length };
+
+  return {
+    creators: creators.length,
+    videos: videos.length,
+    skipped: (payload.creators.length - creators.length) + (payload.videos.length - videos.length),
+  };
 }
 
 /** Wipe the local database and install the backup exactly as it is. */

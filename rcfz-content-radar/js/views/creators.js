@@ -148,6 +148,8 @@ export function render() {
               actionHtml: `<div class="stack">
                 <button type="button" class="btn primary" data-add-creator>
                   ${ICONS.plus}<span>Add Creator</span></button>
+                <button type="button" class="btn tele" data-go="#/settings">
+                  ${ICONS.download}<span>Load Starter Creators</span></button>
                 <button type="button" class="btn quiet" data-bulk-add>
                   ${ICONS.creators}<span>Bulk Add From A List</span></button>
               </div>`,

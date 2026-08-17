@@ -28,6 +28,8 @@ you found, and close it.
   permission status, priority, check frequency and a "due" calculation.
 - **Discovery Mode** — walks approved creators one at a time, most-overdue first,
   with a progress counter and a Quick Save panel that never drops the session.
+- **Load Starter Creators** — installs the shipped starter list from Settings in
+  one tap, through the same preview / merge / replace flow as any import.
 - **Bulk Add** — paste a whole list of creators at once (markdown links,
   `Name | URL`, or bare profile URLs). Platform, username and credit handle are
   detected per line; headings and emoji bullets are ignored, and links already
@@ -61,6 +63,7 @@ rcfz-content-radar/
 ├── sw.js                      service worker — precache + offline shell
 ├── css/styles.css             the whole design system
 ├── icons/                     generated PNG icons
+├── data/starter-creators.json starter creator list, loadable in one tap
 ├── tools/make-icons.mjs       regenerates every icon from code
 └── js/
     ├── app.js                 bootstrap + hash router
@@ -113,18 +116,26 @@ five-day equivalent bonus.
 
 ## Privacy model
 
-- **No creator or video data is in this repository.** The repo contains the
-  application only.
-- Nothing is transmitted anywhere. There is no server, no API key, no token, no
-  analytics and no external request for your data — the only network traffic is
-  fetching the app's own files.
+- **Your workflow data never leaves the device.** Saved videos, ideas, notes,
+  captions, statuses and check history live only in IndexedDB in your browser.
+- Nothing is transmitted anywhere. There is no server, no account, no API key,
+  no token, no analytics and no external request for your data — the only
+  network traffic is fetching the app's own files.
 - Your database is scoped to this origin in your browser. Clearing the site's
   storage, or uninstalling the PWA with "clear data", deletes it.
 - `.gitignore` blocks `*backup*.json` and `*seed*.json` so a personal export
   can't be committed by accident.
 
-**Because the data lives only on the device, exported backups are the only copy.
-Export regularly.**
+**One deliberate exception:** `data/starter-creators.json` is committed. It
+holds the starter creator list — public profile links only — so the app can
+install it in one tap from Settings. It contains no saved videos, notes or
+workflow state. If you'd rather it not be public, delete that file, remove it
+from `PRECACHE` in `sw.js`, drop the `starter` branch in
+`js/views/settings.js`, and load your creators through Bulk Add or Import
+Backup instead.
+
+**Because your workflow data lives only on the device, exported backups are the
+only copy. Export regularly.**
 
 ---
 
@@ -147,8 +158,12 @@ it:
   explicit confirmation; nothing is ever overwritten silently.
 
 The importer also accepts a bare seed file (`{ "creators": [ ... ] }` or a plain
-array of creators), which is how a starter creator list is loaded without
-committing it here.
+array of creators).
+
+**Settings → Load Starter Creators** runs the shipped
+`data/starter-creators.json` through that same preview-and-choose flow, so the
+starter list installs in one tap — offline included, since the file is
+precached.
 
 ---
 
