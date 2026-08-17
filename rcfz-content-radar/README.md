@@ -28,6 +28,11 @@ you found, and close it.
   permission status, priority, check frequency and a "due" calculation.
 - **Discovery Mode** — walks approved creators one at a time, most-overdue first,
   with a progress counter and a Quick Save panel that never drops the session.
+- **Bulk Add** — paste a whole list of creators at once (markdown links,
+  `Name | URL`, or bare profile URLs). Platform, username and credit handle are
+  detected per line; headings and emoji bullets are ignored, and links already
+  in the database are flagged and skipped. Reachable from Settings, the empty
+  Creators screen, and the Add Creator sheet.
 - **Quick Save** — paste a URL, hit save. Platform is auto-detected. Everything
   else is optional.
 - **Content Bank** — every saved video, filterable by creator, platform,
@@ -66,6 +71,7 @@ rcfz-content-radar/
     ├── util.js                dates, due logic, URL/platform detection, clipboard
     ├── ui.js                  icons, pills, bottom sheets, toasts, confirms
     ├── forms.js               Quick Save + Add/Edit Creator sheets
+    ├── bulkadd.js             paste-a-list bulk creator import
     └── views/                 home, creators, discovery, bank, queue, video, settings
 ```
 

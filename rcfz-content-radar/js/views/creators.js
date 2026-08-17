@@ -145,8 +145,12 @@ export function render() {
               text: all.length
                 ? 'Try clearing the search or filters.'
                 : 'Add your approved RC creators, or import a seed file from Settings.',
-              actionHtml: `<button type="button" class="btn primary" data-add-creator>
-                ${ICONS.plus}<span>Add Creator</span></button>`,
+              actionHtml: `<div class="stack">
+                <button type="button" class="btn primary" data-add-creator>
+                  ${ICONS.plus}<span>Add Creator</span></button>
+                <button type="button" class="btn quiet" data-bulk-add>
+                  ${ICONS.creators}<span>Bulk Add From A List</span></button>
+              </div>`,
             })}
       </div>`,
 
@@ -172,6 +176,12 @@ export function render() {
         root.querySelector('.list-meta span').textContent =
           `${plural(sorted.length, 'creator')}${sorted.length !== store.allCreators().length ? ` of ${store.allCreators().length}` : ''}`;
       }, 140));
+
+      root.querySelector('[data-bulk-add]')?.addEventListener('click', async () => {
+        const { openBulkAdd } = await import('./../bulkadd.js');
+        const added = await openBulkAdd();
+        if (added) rerender();
+      });
 
       root.querySelector('[data-filter]')?.addEventListener('click', () => filterSheet(rerender));
 

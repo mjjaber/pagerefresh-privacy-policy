@@ -149,6 +149,9 @@ function onNavEvent() {
 window.addEventListener('hashchange', onNavEvent);
 window.addEventListener('popstate', onNavEvent);
 
+// Fired by flows that mutate data from outside the current view's own handlers.
+window.addEventListener('rcfz:data-changed', () => renderRoute({ force: true }));
+
 document.addEventListener('keydown', (ev) => {
   if (ev.key === 'Escape' && hasOpenSheet()) {
     ev.preventDefault();

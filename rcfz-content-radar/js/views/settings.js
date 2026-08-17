@@ -161,6 +161,8 @@ export function render() {
       </div>
 
       <div class="stack" style="margin-top:12px">
+        <button type="button" class="btn quiet" data-act="bulk-add">
+          ${ICONS.creators}<span>Bulk Add Creators</span></button>
         <button type="button" class="btn quiet" data-act="categories">
           ${ICONS.spark}<span>Custom Categories</span></button>
         <button type="button" class="btn quiet" data-act="clear-resume">
@@ -234,6 +236,10 @@ export function render() {
           fileInput.click();
         } else if (act === 'import-paste') {
           pasteSheet(refresh);
+        } else if (act === 'bulk-add') {
+          const { openBulkAdd } = await import('./../bulkadd.js');
+          const added = await openBulkAdd();
+          if (added) refresh();
         } else if (act === 'categories') {
           categorySheet(refresh);
         } else if (act === 'clear-resume') {

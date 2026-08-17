@@ -230,7 +230,9 @@ export function openCreatorForm(creator = null) {
     title: editing ? 'Edit Creator' : 'Add Creator',
     body,
     foot: `<button type="button" class="btn primary" data-save>
-             ${ICONS.check}<span>${editing ? 'Save Changes' : 'Add Creator'}</span></button>`,
+             ${ICONS.check}<span>${editing ? 'Save Changes' : 'Add Creator'}</span></button>
+           ${editing ? '' : `<button type="button" class="btn ghost sm" data-bulk>
+             Bulk add from a pasted list</button>`}`,
     onMount(sheet, close) {
       const form = sheet.querySelector('#cf-form');
       bindSegments(form);
@@ -305,6 +307,13 @@ export function openCreatorForm(creator = null) {
 
       sheet.querySelector('[data-save]').addEventListener('click', submit);
       form.addEventListener('submit', (ev) => { ev.preventDefault(); submit(); });
+
+      sheet.querySelector('[data-bulk]')?.addEventListener('click', async () => {
+        close(undefined);
+        const { openBulkAdd } = await import('./bulkadd.js');
+        const added = await openBulkAdd();
+        if (added) window.dispatchEvent(new CustomEvent('rcfz:data-changed'));
+      });
     },
   });
 }
