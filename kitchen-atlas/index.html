@@ -2,14 +2,20 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kitchen Atlas">
 <title>Kitchen Atlas — what can I cook tonight?</title>
 <meta name="description" content="Tell it what is in your kitchen and it shows the world dishes you can make: the country, the history, a picture, the ingredients and the method.">
 <meta name="theme-color" content="#0f1115">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
+<link rel="icon" href="icons/favicon.png" sizes="64x64">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -23,16 +29,19 @@
         <p>Your ingredients → world dishes, with the story behind each one</p>
       </div>
     </div>
-    <button class="icon-btn" id="surprise">🎲 Surprise me</button>
-    <button class="icon-btn" id="theme">🌗 Theme</button>
+    <button class="icon-btn" id="surprise"><span aria-hidden="true">🎲</span><span class="btn-txt"> Surprise me</span></button>
+    <button class="icon-btn" id="theme"><span aria-hidden="true">🌗</span><span class="btn-txt"> Theme</span></button>
   </div>
 </header>
 
 <main class="wrap">
 
   <aside class="sidebar">
-    <section class="panel">
-      <h2>My kitchen</h2>
+    <section class="panel panel--pantry">
+      <div class="panel-head">
+        <h2>My kitchen</h2>
+        <button class="link-btn" id="clear">Clear</button>
+      </div>
       <div class="input-row">
         <input id="ing-input" type="text" placeholder="Add an ingredient… e.g. chickpeas" autocomplete="off" spellcheck="false">
         <button class="add-btn" id="add">Add</button>
@@ -40,13 +49,11 @@
       </div>
       <div class="chips" id="chips"></div>
       <p class="empty-note" id="pantry-empty">Nothing added yet. Start with what you actually have — every dish below is ranked by how much of it you already own.</p>
+      <p class="mini-label">Tap to add</p>
       <div class="quickadd" id="quickadd"></div>
-      <div class="row-btns">
-        <button id="clear">Empty the list</button>
-      </div>
     </section>
 
-    <section class="panel">
+    <section class="panel panel--stats">
       <h2>At a glance</h2>
       <div class="stats">
         <div class="stat"><b id="stat-pantry">0</b><span>ingredients</span></div>
@@ -55,27 +62,30 @@
       </div>
     </section>
 
-    <section class="panel">
+    <section class="panel panel--unlock">
       <h2>Buy one thing, unlock more</h2>
       <div id="unlock"></div>
     </section>
   </aside>
 
-  <section>
+  <section class="results">
     <div class="toolbar">
-      <div class="seg">
-        <button data-view="all" class="on">All matches</button>
+      <input id="search" type="search" placeholder="Search dishes, countries, tags…" enterkeyhint="search">
+      <div class="seg" role="tablist">
+        <button data-view="all" class="on">All</button>
         <button data-view="now">Cook now</button>
         <button data-view="almost">Almost there</button>
       </div>
-      <select id="region"></select>
-      <select id="sort">
-        <option value="match">Sort: best match</option>
-        <option value="quick">Sort: quickest</option>
-        <option value="az">Sort: A–Z</option>
-        <option value="country">Sort: country</option>
-      </select>
-      <input id="search" type="search" placeholder="Search dishes, countries, tags…">
+      <div class="selects">
+        <button id="viewmode" class="mode-btn" aria-label="Switch between list and card view" title="List or card view">☰</button>
+        <select id="region" aria-label="Filter by region"></select>
+        <select id="sort" aria-label="Sort dishes">
+          <option value="match">Best match</option>
+          <option value="quick">Quickest</option>
+          <option value="az">A–Z</option>
+          <option value="country">Country</option>
+        </select>
+      </div>
     </div>
     <p class="count-line" id="count"></p>
     <div class="grid" id="grid"></div>
@@ -86,7 +96,7 @@
 <div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
 
 <p class="foot">
-  Photos and further reading come from Wikipedia. Recipes are written for home kitchens — season to your own taste.
+  Tap a step or ingredient while cooking to tick it off. Photos and further reading come from Wikipedia. Recipes are written for home kitchens — season to your own taste.
   Your ingredient list is stored only in this browser.
 </p>
 

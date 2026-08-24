@@ -18,7 +18,9 @@ body{
   font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
   min-height:100vh;
 }
-button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+button,input,select,textarea{font-family:inherit;font-size:16px;color:inherit}
+input,select,textarea{font-size:16px}   /* < 16px makes iOS zoom the page on focus */
+button{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 button{cursor:pointer}
 a{color:var(--accent)}
 
@@ -49,17 +51,21 @@ a{color:var(--accent)}
 }
 .sidebar{position:sticky;top:78px;display:flex;flex-direction:column;gap:16px}
 @media(max-width:980px){.sidebar{position:static}}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.panel-head h2{margin:0}
+.link-btn{background:none;border:none;color:var(--txt-3);font-size:12.5px;font-weight:600;padding:11px 6px;min-height:42px;text-transform:uppercase;letter-spacing:.06em}
+.link-btn:hover{color:var(--bad)}
 .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--txt-3);margin:0 0 12px}
 
 /* ---------- pantry input ---------- */
 .input-row{position:relative;display:flex;gap:8px}
 .input-row input{
-  flex:1; background:var(--bg-3); border:1px solid var(--line); border-radius:11px;
+  flex:1;min-height:48px; background:var(--bg-3); border:1px solid var(--line); border-radius:11px;
   padding:11px 13px; outline:none; transition:.15s; min-width:0;
 }
 .input-row input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
 .add-btn{
-  background:var(--accent); color:#1a0e07; border:none; border-radius:11px;
+  min-height:48px;background:var(--accent); color:#1a0e07; border:none; border-radius:11px;
   padding:0 16px; font-weight:700;
 }
 .add-btn:hover{background:var(--accent-2)}
@@ -69,7 +75,7 @@ a{color:var(--accent)}
   box-shadow:var(--shadow); max-height:270px; overflow:auto; padding:6px; display:none;
 }
 .suggest.on{display:block}
-.suggest div{padding:8px 11px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;justify-content:space-between;gap:10px}
+.suggest div{padding:12px 12px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;justify-content:space-between;gap:10px}
 .suggest div:hover,.suggest div.hi{background:var(--bg-3)}
 .suggest .cnt{color:var(--txt-3);font-size:12px}
 
@@ -79,7 +85,7 @@ a{color:var(--accent)}
   border:1px solid var(--line); border-radius:999px; padding:6px 8px 6px 12px;
   font-size:13px; text-transform:capitalize;
 }
-.chip button{background:none;border:none;color:var(--txt-3);font-size:15px;line-height:1;padding:0 2px}
+.chip button{background:none;border:none;color:var(--txt-3);font-size:17px;line-height:1;padding:2px 6px;margin:-2px -2px -2px 0;border-radius:50%}
 .chip button:hover{color:var(--bad)}
 .empty-note{color:var(--txt-3);font-size:13px;margin:12px 0 0}
 
@@ -110,6 +116,12 @@ a{color:var(--accent)}
 .seg button{background:none;border:none;padding:9px 13px;font-size:13px;font-weight:600;color:var(--txt-3)}
 .seg button.on{background:var(--accent);color:#1a0e07}
 .count-line{color:var(--txt-3);font-size:13px;margin:0 0 14px}
+
+.mode-btn{
+  flex:none;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;
+  width:46px;font-size:17px;color:var(--txt-2);
+}
+.mode-btn:hover{border-color:var(--accent);color:var(--txt)}
 
 /* ---------- dish grid ---------- */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
@@ -145,6 +157,31 @@ a{color:var(--accent)}
 .missing b{color:var(--txt-2);font-weight:600}
 .bar{height:5px;border-radius:999px;background:var(--bg-3);overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--good))}
+
+/* Compact list — the default on phones, where the job is scanning 74 dishes
+   with a thumb rather than admiring photographs. */
+.grid.compact{grid-template-columns:1fr;gap:10px}
+.grid.compact .card{flex-direction:row;align-items:stretch}
+.grid.compact .thumb{flex:none;width:112px;aspect-ratio:auto}
+.grid.compact .thumb .fallback{font-size:34px}
+.grid.compact .flagtag{
+  bottom:auto;top:6px;left:6px;padding:3px 7px;font-size:10.5px;max-width:100px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.grid.compact .badge,.grid.compact .flagtag{display:none}
+.grid.compact .c-flag{display:inline;margin-right:7px}
+.grid.compact .m-status{display:inline}
+.c-flag,.m-status{display:none}
+.m-status.ok{color:var(--good);font-weight:600}
+.m-status.warn{color:var(--warn)}
+.grid.compact .card-body{padding:11px 13px;gap:6px;min-width:0}
+.grid.compact .card-body h3{font-size:15.5px}
+.grid.compact .blurb{display:none}
+.grid.compact .missing{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grid.compact .meta{font-size:11.5px;gap:9px}
+.grid.compact .meta .m-serves,.grid.compact .meta .m-diff,.grid.compact .meta .m-pct{display:none}
+.grid.compact .meta{flex-wrap:nowrap}
+.grid.compact .bar{margin-top:auto}
 
 .no-results{text-align:center;padding:70px 20px;color:var(--txt-3)}
 .no-results .big{font-size:46px;margin-bottom:10px}
@@ -195,6 +232,11 @@ ol.steps li::before{
   background:var(--accent);color:#1a0e07;font-weight:800;font-size:13px;
   display:flex;align-items:center;justify-content:center;margin-top:1px;
 }
+ol.steps li,ul.ing li[data-step]{cursor:pointer;-webkit-tap-highlight-color:transparent}
+ol.steps li.done span,ul.ing li.done span{opacity:.4;text-decoration:line-through}
+ol.steps li.done::before{background:var(--good);color:#06301f}
+.tap-hint{font-size:11.5px;color:var(--txt-3);margin:8px 0 0}
+
 .modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
 .modal-actions a,.modal-actions button{
   background:var(--bg-3);border:1px solid var(--line);border-radius:10px;padding:9px 15px;
@@ -204,3 +246,167 @@ ol.steps li::before{
 .foot{max-width:1400px;margin:0 auto;padding:0 20px 40px;color:var(--txt-3);font-size:12.5px;text-align:center}
 .shop-list{margin:0;padding-left:20px;color:var(--txt-2);font-size:13.5px;columns:2;gap:14px}
 @media(max-width:520px){.shop-list{columns:1}}
+
+
+/* =======================================================================
+   PHONE-FIRST LAYOUT
+   Kitchen Atlas is used standing in a kitchen, one thumb, screen locked
+   to portrait. Below 980px the sidebar dissolves (display:contents) so the
+   three panels can be ordered independently around the results.
+   ======================================================================= */
+.mini-label{margin:14px 0 0;font-size:12px;color:var(--txt-3)}
+.btn-txt{display:inline}
+.selects{display:flex;gap:10px;flex:1;min-width:220px}
+.selects select{flex:1;min-width:0}
+.toolbar select,.toolbar input[type=search]{min-height:44px}
+
+@media (max-width:980px){
+  html,body{overflow-x:clip}          /* full-bleed strips must never scroll the page sideways */
+  body{-webkit-text-size-adjust:100%}
+  .topbar-in{
+    padding:10px 14px; gap:10px;
+    padding-top:calc(10px + env(safe-area-inset-top));
+    padding-left:calc(14px + env(safe-area-inset-left));
+    padding-right:calc(14px + env(safe-area-inset-right));
+  }
+  .brand .logo{font-size:24px}
+  .brand h1{font-size:17px}
+  .brand p{display:none}
+  .btn-txt{display:none}          /* icon-only buttons keep the header one line */
+  .icon-btn{padding:11px 14px;font-size:17px;line-height:1;min-height:44px;min-width:46px}
+
+  .wrap{
+    display:flex; flex-direction:column; gap:14px;
+    padding:14px 14px 40px;
+    padding-left:calc(14px + env(safe-area-inset-left));
+    padding-right:calc(14px + env(safe-area-inset-right));
+    padding-bottom:calc(40px + env(safe-area-inset-bottom));
+  }
+  .wrap > *{min-width:0;max-width:100%}   /* flex items default to min-width:auto and would be
+                                             stretched by the scrolling quick-add strip */
+  .sidebar{display:contents}      /* let each panel take its own place in the column */
+  .panel--pantry{order:1}
+  .panel--stats{order:2}
+  .results{order:3}
+  .panel--unlock{order:4}
+
+  .panel{padding:14px;border-radius:14px}
+  .panel h2{margin-bottom:10px}
+
+  /* the ingredient input is the one control that must always be reachable */
+  .panel--pantry .input-row{position:sticky;top:0;z-index:20}
+  /* one swipeable line of chips instead of a growing block that pushes the
+     dishes off the first screen */
+  .chips{
+    gap:8px; margin:12px -14px 0; padding:0 14px 4px;
+    flex-wrap:nowrap; overflow-x:auto; max-width:100vw;
+    scrollbar-width:none; -webkit-overflow-scrolling:touch;
+  }
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;padding:9px 10px 9px 14px;font-size:14px}
+  .empty-note{font-size:12.5px;margin-top:10px}
+  .mini-label{margin-top:12px;font-size:11.5px}
+
+  /* stats shrink to a slim strip — the numbers matter, the panel chrome does not */
+  .panel--stats{padding:8px;border-radius:12px}
+  .panel--stats h2{display:none}
+  .stats{grid-template-columns:repeat(3,1fr);gap:6px}
+  .stat{
+    display:flex;align-items:baseline;justify-content:center;gap:6px;
+    padding:9px 4px;border-radius:9px;
+  }
+  .stat b{font-size:17px}
+  .stat span{font-size:10.5px}
+
+  /* quick-add becomes a single swipeable strip instead of eating the screen */
+  .quickadd{
+    flex-wrap:nowrap; overflow-x:auto; max-width:100vw; margin:8px -14px 0; padding:2px 14px 6px;
+    scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .quickadd::-webkit-scrollbar{display:none}
+  .quickadd button{flex:none;scroll-snap-align:start;padding:11px 15px;font-size:13.5px;min-height:42px}
+  .panel-head{margin-bottom:10px}
+  .link-btn{padding:10px 6px;margin:-10px -6px -10px 0}
+
+  .stats{gap:8px}
+  .stat{padding:10px 6px}
+  .stat b{font-size:20px}
+  .stat span{font-size:10px;letter-spacing:.04em}
+
+  /* filters stay put while the list scrolls */
+  .toolbar{
+    position:sticky; top:var(--topbar-h,56px); z-index:25;
+    flex-direction:column; align-items:stretch; gap:9px;
+    margin:0 -14px 12px; padding:10px 14px;
+    background:color-mix(in srgb,var(--bg) 97%,transparent);
+    backdrop-filter:blur(12px); border-bottom:1px solid var(--line);
+  }
+  .toolbar input[type=search]{width:100%}
+  .seg{width:100%}
+  .seg button{flex:1;padding:13px 6px;font-size:13.5px;min-height:46px}
+  .selects{width:100%}
+  .toolbar select,.toolbar input[type=search]{min-height:46px}
+  .count-line{margin:0 0 12px;font-size:12.5px}
+
+  .grid{grid-template-columns:1fr;gap:14px}
+  .toolbar{padding-bottom:9px}
+  .grid.compact .thumb{width:104px}
+  .thumb{aspect-ratio:16/9}
+  .card:hover{transform:none}     /* no hover state on touch */
+  .card:active{transform:scale(.99)}
+  .card-body{padding:13px 14px 15px}
+  .card-body h3{font-size:17px}
+  .badge{font-size:12.5px;padding:6px 11px}
+
+  /* dish detail becomes a full-screen sheet */
+  .overlay{padding:0;background:var(--bg)}
+  .modal{
+    max-width:none;margin:0;border:none;border-radius:0;min-height:100%;
+    box-shadow:none;
+  }
+  .hero{aspect-ratio:4/3;max-height:44vh}
+  .hero .titles{left:16px;right:16px;bottom:14px}
+  .hero h2{font-size:23px}
+  .close-x{
+    width:44px;height:44px;font-size:22px;
+    top:calc(12px + env(safe-area-inset-top)); right:12px;
+  }
+  .modal-body{
+    padding:18px 16px calc(34px + env(safe-area-inset-bottom));
+  }
+  .facts{gap:7px;margin-bottom:16px}
+  .fact{font-size:12px;padding:6px 11px}
+  .cols{gap:22px}
+  .sec{margin-bottom:22px}
+  .sec p,ol.steps li,ul.ing li{font-size:15px}
+  ol.steps li::before{width:26px;height:26px}
+  .modal-actions{position:sticky;bottom:0;padding-top:4px}
+  .modal-actions a,.modal-actions button{flex:1;text-align:center;min-height:46px;
+    display:flex;align-items:center;justify-content:center}
+  .shop-list{columns:1}
+  .foot{padding:0 16px 32px}
+}
+
+@media (max-width:400px){
+  .brand h1{font-size:16px}
+  .stat b{font-size:18px}
+  .seg button{font-size:12.5px;padding:11px 4px}
+}
+
+/* Landscape phones: keep the sheet usable when the keyboard is closed */
+@media (max-width:980px) and (orientation:landscape){
+  .hero{aspect-ratio:21/9;max-height:58vh}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+
+@media print{
+  .topbar,.sidebar,.toolbar,.count-line,.grid,.foot,.close-x,.modal-actions{display:none!important}
+  .overlay{position:static;background:#fff;padding:0}
+  .modal{box-shadow:none;border:none}
+  body{background:#fff;color:#000}
+  .sec p,ol.steps li,ul.ing li{color:#000}
+}

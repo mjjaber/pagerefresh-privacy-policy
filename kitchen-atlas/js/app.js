@@ -3,7 +3,7 @@
   "use strict";
 
   var DISHES = window.DISHES || [];
-  var LS_PANTRY = "ka.pantry.v1", LS_THEME = "ka.theme", LS_IMG = "ka.img.";
+  var LS_PANTRY = "ka.pantry.v1", LS_THEME = "ka.theme", LS_IMG = "ka.img.", LS_MODE = "ka.mode";
 
   /* ---------- ingredient catalog ---------- */
   var CATALOG = {};                      // key -> number of dishes using it
@@ -151,6 +151,9 @@
   var pantry = [];
   try { pantry = JSON.parse(localStorage.getItem(LS_PANTRY)) || []; } catch (e) { pantry = []; }
   var view = "all", region = "", sortBy = "match", query = "";
+  /* Phones default to the compact list; wider screens to picture cards. */
+  var compact = window.matchMedia("(max-width:980px)").matches;
+  try { var savedMode = localStorage.getItem(LS_MODE); if (savedMode) compact = savedMode === "compact"; } catch (e) {}
 
   function savePantry() {
     try { localStorage.setItem(LS_PANTRY, JSON.stringify(pantry)); } catch (e) {}
@@ -301,12 +304,14 @@
         '<span class="flagtag">' + d.flag + " " + esc(d.country) + "</span>" +
       "</div>" +
       '<div class="card-body">' +
-        "<h3>" + esc(d.name) + "</h3>" +
+        '<h3><span class="c-flag" aria-hidden="true">' + d.flag + "</span>" + esc(d.name) + "</h3>" +
         '<p class="blurb">' + esc(d.blurb) + "</p>" +
         miss +
         '<div class="bar"><i style="width:' + r.pct + '%"></i></div>' +
-        '<div class="meta"><span>⏱ ' + esc(d.time) + "</span><span>👥 " + d.serves +
-          "</span><span>🎚 " + esc(d.diff) + "</span><span>" + r.pct + "% matched</span></div>" +
+        '<div class="meta"><span>⏱ ' + esc(d.time) + '</span><span class="m-serves">👥 ' + d.serves +
+          '</span><span class="m-diff">🎚 ' + esc(d.diff) + '</span><span class="m-pct">' + r.pct + "% matched</span>" +
+          '<span class="m-status ' + (r.need.length ? "warn" : "ok") + '">' +
+          (r.need.length ? "🛒 " + r.need.length + " missing" : "✅ cook now") + "</span></div>" +
       "</div></article>";
   }
 
@@ -315,13 +320,20 @@
     var rows = ranked(), grid = $("#grid");
     renderStats(DISHES.map(function (d) { return score(d, pantrySet()); }));
     renderUnlock();
-    $("#count").textContent = rows.length + " dish" + (rows.length === 1 ? "" : "es") +
-      (pantry.length ? " matching your kitchen" : " in the atlas — add ingredients to rank them");
+    var noPantry = !pantry.length;
+    $("#count").textContent = noPantry && view === "all"
+      ? rows.length + " dishes in the atlas — add what you have to rank them"
+      : rows.length + " dish" + (rows.length === 1 ? "" : "es") +
+        (noPantry ? " — add ingredients to see what you can cook" : " matching your kitchen");
     if (!rows.length) {
-      grid.innerHTML = '<div class="no-results"><div class="big">🥄</div>' +
-        "<p>No dishes match that yet. Try removing a filter, or add another ingredient.</p></div>";
+      grid.innerHTML = '<div class="no-results"><div class="big">' + (noPantry ? "🧺" : "🥄") + "</div><p>" +
+        (noPantry
+          ? "Add a few ingredients above first — then this shows the dishes you can cook right now."
+          : "No dishes match that yet. Try clearing a filter, or add another ingredient.") +
+        "</p></div>";
       return;
     }
+    grid.className = "grid" + (compact ? " compact" : "");
     grid.innerHTML = rows.map(cardHTML).join("");
     if (io) io.disconnect();
     io = new IntersectionObserver(function (entries) {
@@ -339,9 +351,35 @@
     return null;
   }
 
+  /* Keep the screen awake while a recipe is open — phones dim halfway through
+     step 3 otherwise, and wet hands do not wake them well. */
+  var wakeLock = null;
+  function keepAwake(on) {
+    if (!("wakeLock" in navigator)) return;
+    if (on) {
+      navigator.wakeLock.request("screen").then(function (l) {
+        wakeLock = l;
+        l.addEventListener("release", function () { wakeLock = null; });
+      }).catch(function () {});
+    } else if (wakeLock) {
+      try { wakeLock.release(); } catch (e) {}
+      wakeLock = null;
+    }
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" &&
+        $("#overlay") && $("#overlay").classList.contains("on")) keepAwake(true);
+  });
+
   /* ---------- modal ---------- */
-  function openDish(id) {
+  /* On a phone the dish sheet is a full screen, so the hardware/gesture back
+     button must close it rather than leave the app. Each open pushes a history
+     entry; back pops it. */
+  function openDish(id, fromHistory) {
     var d = byId(id); if (!d) return;
+    if (!fromHistory) {
+      try { history.pushState({ ka: id }, "", "#" + id); } catch (e) {}
+    }
     var r = score(d, pantrySet());
     var m = $("#modal");
     m.innerHTML =
@@ -362,7 +400,7 @@
           '<div class="sec"><h4>🧾 Ingredients</h4><ul class="ing">' +
             d.ing.map(function (i) {
               var has = satisfied(i[0], pantrySet());
-              return '<li class="' + (has ? "have" : "need") + '"><span class="mark">' +
+              return '<li data-step class="' + (has ? "have" : "need") + '"><span class="mark">' +
                 (has ? "✓" : "•") + "</span><span>" + esc(i[1]) + "</span></li>";
             }).join("") +
             (d.staples || []).map(function (s) {
@@ -370,8 +408,8 @@
             }).join("") +
           "</ul></div>" +
           '<div class="sec"><h4>👩‍🍳 Method</h4><ol class="steps">' +
-            d.steps.map(function (s) { return "<li><span>" + esc(s) + "</span></li>"; }).join("") +
-          "</ol></div>" +
+            d.steps.map(function (s) { return '<li data-step><span>' + esc(s) + "</span></li>"; }).join("") +
+          '</ol><p class="tap-hint">Tap a step to tick it off — the screen stays awake while this is open.</p></div>' +
         "</div>" +
         '<div class="modal-actions">' +
           '<a href="https://en.wikipedia.org/wiki/' + encodeURIComponent(d.wiki) + '" target="_blank" rel="noopener">Read more on Wikipedia ↗</a>' +
@@ -381,12 +419,23 @@
       "</div>";
     loadImage($("#hero"), d);
     $("#overlay").classList.add("on");
+    $("#overlay").scrollTop = 0;
     document.body.style.overflow = "hidden";
+    keepAwake(true);
   }
-  function closeModal() {
+  function closeModal(fromHistory) {
+    if (!fromHistory && history.state && history.state.ka) { history.back(); return; }
     $("#overlay").classList.remove("on");
     document.body.style.overflow = "";
+    keepAwake(false);
+    if (!fromHistory && location.hash) {
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    }
   }
+  window.addEventListener("popstate", function (e) {
+    if (e.state && e.state.ka) openDish(e.state.ka, true);
+    else closeModal(true);
+  });
 
   /* ---------- autocomplete ---------- */
   function suggestions(q) {
@@ -437,7 +486,15 @@
   }
 
   /* ---------- wiring ---------- */
+  function measureHeader() {
+    var h = document.querySelector(".topbar");
+    if (h) document.documentElement.style.setProperty("--topbar-h", h.offsetHeight + "px");
+  }
+
   function init() {
+    measureHeader();
+    window.addEventListener("resize", measureHeader);
+    window.addEventListener("orientationchange", measureHeader);
     // regions
     var regions = {};
     DISHES.forEach(function (d) { regions[d.region] = true; });
@@ -484,6 +541,9 @@
       if (t.id === "overlay") { closeModal(); return; }
       if (t.hasAttribute && t.hasAttribute("data-print")) { window.print(); return; }
 
+      var step = t.closest && t.closest("[data-step]");
+      if (step) { step.classList.toggle("done"); return; }
+
       var all = t.getAttribute && t.getAttribute("data-addall");
       if (all) {
         var d = byId(all), set = pantrySet();
@@ -505,6 +565,14 @@
         renderGrid();
       });
     });
+    var modeBtn = $("#viewmode");
+    function paintMode() { modeBtn.textContent = compact ? "▦" : "☰"; }
+    paintMode();
+    modeBtn.addEventListener("click", function () {
+      compact = !compact;
+      try { localStorage.setItem(LS_MODE, compact ? "compact" : "cards"); } catch (e) {}
+      paintMode(); renderGrid();
+    });
     $("#region").addEventListener("change", function () { region = this.value; renderGrid(); });
     $("#sort").addEventListener("change", function () { sortBy = this.value; renderGrid(); });
     $("#search").addEventListener("input", function () { query = this.value; renderGrid(); });
@@ -515,6 +583,10 @@
       var rows = ranked();
       if (rows.length) openDish(rows[Math.floor(Math.random() * Math.min(rows.length, 12))].dish.id);
     });
+
+    // a shared/reloaded link like …/#pad-thai opens straight onto that dish
+    var hash = (location.hash || "").replace("#", "");
+    if (hash && byId(hash)) openDish(hash, true);
 
     // theme
     var saved = null;
