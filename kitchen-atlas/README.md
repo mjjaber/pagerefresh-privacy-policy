@@ -23,16 +23,38 @@ comes from, its history, a picture, the full ingredient list and the method.
 
 Your ingredient list is stored in your own browser (localStorage) and never leaves it.
 
+## On a phone
+
+The layout is phone-first — this is an app you use standing in a kitchen:
+
+- **Compact list view by default** on phones (thumbnail, dish, what you're missing),
+  so four or five dishes fit per screen; a toggle in the filter bar switches to
+  full picture cards, and the choice is remembered.
+- **Sticky filter bar and ingredient box** — search and the Cook now / Almost there
+  tabs stay reachable while the list scrolls.
+- **The ingredient chips and quick-add row are single swipeable strips**, so a long
+  kitchen list never pushes the dishes off the screen.
+- **A dish opens as a full-screen sheet**, and the phone's back button/gesture closes
+  it instead of leaving the app. Each dish also has its own link (…/#pad-thai).
+- **The screen stays awake while a recipe is open** (Wake Lock, where supported), and
+  tapping a step or an ingredient ticks it off as you cook.
+- **Add to Home Screen** works — it installs with an icon and opens full-screen
+  (`manifest.webmanifest`, standalone display, maskable icons).
+- All tap targets are at least 42px, inputs are 16px so iOS never zooms on focus,
+  and the layout respects notch/home-bar safe areas in both orientations.
+
 ## How it is built
 
 Plain HTML, CSS and JavaScript — no build step, no framework, no server.
 
 ```
 kitchen-atlas/
-  index.html      layout
-  css/styles.css  styling, themes, responsive grid
-  js/dishes.js    the dish database (country, history, ingredients, method)
-  js/app.js       matching, filtering, ranking, rendering
+  index.html            layout
+  manifest.webmanifest  add-to-home-screen metadata
+  icons/                app icons (generated, not hand-drawn)
+  css/styles.css        styling, themes, phone-first layout
+  js/dishes.js          the dish database (country, history, ingredients, method)
+  js/app.js             matching, filtering, ranking, rendering
 ```
 
 Photos and the "read more" links come from Wikipedia's public API at page load and
