@@ -3,12 +3,14 @@ name: Deploy to GitHub Pages
 # Publishes the repository to GitHub Pages. Apps live in sub-directories:
 #   https://<owner>.github.io/<repo>/wind-app/
 #   https://<owner>.github.io/<repo>/rcfz-content-radar/
+#   https://<owner>.github.io/<repo>/kitchen-atlas/
 on:
   push:
     branches:
       - main
       - claude/new-session-57a1sz
       - claude/rcfz-content-radar-pwa-fcqwdc
+      - claude/kitchen-recipe-dashboard-xclcse
   workflow_dispatch:
 
 # Permissions required by the Pages deployment actions.
