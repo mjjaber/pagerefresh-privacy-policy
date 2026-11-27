@@ -1,0 +1,175 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens. The --brand-* color values come from
+ * src/config/site.config.ts (injected into each page at build time), so
+ * colors are only ever edited there.
+ */
+@theme inline {
+  --color-warm-white: var(--brand-warm-white);
+  --color-white: var(--brand-white);
+  --color-teal: var(--brand-teal);
+  --color-teal-dark: var(--brand-teal-dark);
+  --color-sage: var(--brand-sage);
+  --color-sage-dark: var(--brand-sage-dark);
+  --color-charcoal: var(--brand-charcoal);
+  --color-muted: var(--brand-muted);
+  --color-line: var(--brand-border);
+  --color-gold: var(--brand-gold);
+  --color-gold-soft: var(--brand-gold-soft);
+  --color-danger: var(--brand-danger);
+  --color-danger-soft: var(--brand-danger-soft);
+
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', Arial, sans-serif;
+
+  --shadow-soft: 0 1px 2px rgb(23 53 47 / 0.06), 0 8px 24px -12px rgb(23 53 47 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(23 53 47 / 0.06), 0 18px 40px -18px rgb(23 53 47 / 0.28);
+}
+
+@layer base {
+  html {
+    /* Keeps anchored sections and focused fields clear of the sticky header. */
+    scroll-padding-top: 5.75rem;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-warm-white);
+    color: var(--color-charcoal);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* One clear focus style everywhere. `.on-dark` areas switch to gold. */
+  :focus-visible {
+    outline: 3px solid var(--color-teal-dark);
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--color-gold);
+  }
+
+  [tabindex='-1']:focus {
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .page-container {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  .section {
+    @apply py-16 sm:py-24;
+  }
+
+  .eyebrow {
+    @apply text-teal mb-3 text-sm font-bold tracking-[0.14em] uppercase;
+  }
+
+  .section-title {
+    @apply text-charcoal text-3xl font-extrabold sm:text-4xl;
+  }
+
+  .lead {
+    @apply text-muted mt-4 max-w-2xl text-lg;
+  }
+
+  /* Buttons: at least 44px tall for comfortable tapping. */
+  .btn {
+    @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full px-6 py-2.5 text-center text-base leading-tight font-bold no-underline transition-colors duration-150;
+  }
+
+  .btn-primary {
+    @apply bg-teal hover:bg-teal-dark text-white;
+  }
+
+  .btn-secondary {
+    @apply border-teal text-teal hover:bg-sage border-2 bg-white;
+  }
+
+  .btn-gold {
+    @apply bg-gold text-charcoal hover:bg-[#d99f2e];
+  }
+
+  .btn-quiet {
+    @apply text-teal hover:bg-sage min-h-11 rounded-full px-4 py-2 font-bold underline decoration-2 underline-offset-4;
+  }
+
+  .text-link {
+    @apply text-teal hover:text-teal-dark font-semibold underline decoration-2 underline-offset-4;
+  }
+
+  .card {
+    @apply rounded-3xl bg-white p-6 shadow-(--shadow-soft) sm:p-8;
+  }
+
+  /* Form fields. 16px+ text prevents iOS from zooming in on focus. */
+  .field-label {
+    @apply text-charcoal block text-base font-bold;
+  }
+
+  .field-optional {
+    @apply text-muted ml-1 text-sm font-normal;
+  }
+
+  .field-hint {
+    @apply text-muted mt-1 text-[0.9375rem];
+  }
+
+  .field-input {
+    @apply border-line text-charcoal mt-2 block min-h-12 w-full rounded-xl border-2 bg-white px-4 py-2.5 text-base;
+  }
+
+  .field-input[aria-invalid='true'] {
+    @apply border-danger;
+  }
+
+  .field-error {
+    @apply text-danger mt-2 flex items-start gap-2 text-[0.9375rem] font-semibold;
+  }
+
+  .choice {
+    @apply border-line has-checked:border-teal has-checked:bg-sage/50 flex min-h-12 cursor-pointer items-start gap-3 rounded-xl border-2 bg-white px-4 py-3;
+  }
+
+  .choice input {
+    @apply accent-teal mt-1 size-5 shrink-0;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold;
+  }
+}
