@@ -1,49 +1,109 @@
-name: Deploy to GitHub Pages
+name: Check and deploy to GitHub Pages
 
 # Publishes the repository to GitHub Pages. Apps live in sub-directories:
 #   https://<owner>.github.io/<repo>/wind-app/
 #   https://<owner>.github.io/<repo>/rcfz-content-radar/
 #   https://<owner>.github.io/<repo>/kitchen-atlas/
+#   https://<owner>.github.io/<repo>/healthy-steps/   (built from source by this workflow)
+#
+# Every push and pull request runs the Healthy Steps checks (types, lint,
+# tests, build). Only pushes to main, or a manual run started from main,
+# publish the site. Pull requests and other branches never publish.
 on:
   push:
-    branches:
-      - main
-      - claude/new-session-57a1sz
-      - claude/rcfz-content-radar-pwa-fcqwdc
-      - claude/kitchen-recipe-dashboard-xclcse
+  pull_request:
   workflow_dispatch:
 
-# Permissions required by the Pages deployment actions.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
-# Allow only one concurrent deployment; don't cancel an in-progress run.
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
+  build:
+    name: Check and build
+    runs-on: ubuntu-latest
+    env:
+      SHOULD_DEPLOY: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: healthy-steps/package-lock.json
+
+      - name: Install dependencies
+        working-directory: healthy-steps
+        run: npm ci
+
+      - name: Check types
+        working-directory: healthy-steps
+        run: npm run typecheck
+
+      - name: Lint
+        working-directory: healthy-steps
+        run: npm run lint
+
+      - name: Run tests
+        working-directory: healthy-steps
+        run: npm test
+
+      - name: Build Healthy Steps
+        working-directory: healthy-steps
+        env:
+          # Path the site is served from. Override with a repository variable
+          # named HEALTHY_STEPS_BASE_PATH if the address ever changes
+          # (for example "/healthy-steps/" on a custom domain).
+          SITE_BASE_PATH: ${{ vars.HEALTHY_STEPS_BASE_PATH || format('/{0}/healthy-steps/', github.event.repository.name) }}
+          # Public configuration from Settings > Secrets and variables >
+          # Actions > Variables. These are NOT secrets: they end up in the
+          # published JavaScript. Leave unset and the form shows its
+          # "not available yet" state.
+          VITE_FORMSPREE_FORM_ID: ${{ vars.VITE_FORMSPREE_FORM_ID }}
+          VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
+        run: npm run build
+
+      - name: Assemble the site
+        run: |
+          mkdir _site
+          # Existing static apps and files are published exactly as before.
+          for entry in *; do
+            case "$entry" in
+              _site|healthy-steps|node_modules) continue ;;
+            esac
+            cp -r "$entry" _site/
+          done
+          # Healthy Steps is published as its built output, not its source.
+          cp -r healthy-steps/dist _site/healthy-steps
+          touch _site/.nojekyll
+          test -f _site/healthy-steps/index.html
+          test -f _site/healthy-steps/privacy.html
+
+      - name: Upload site artifact
+        if: env.SHOULD_DEPLOY == 'true'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
   deploy:
+    name: Deploy
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    # Permissions required by the Pages deployment action.
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload the whole repo so existing files (e.g. privacy-policy.html)
-          # keep working; the wind app lives at /wind-app/.
-          path: "."
-
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

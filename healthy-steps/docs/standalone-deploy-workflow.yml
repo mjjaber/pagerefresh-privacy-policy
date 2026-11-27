@@ -1,0 +1,65 @@
+# Deploy workflow for when Healthy Steps lives in ITS OWN repository, with
+# the contents of this folder at the repository root.
+#
+# To use it: copy this file to .github/workflows/deploy.yml in that
+# repository. The site is then published at
+#   https://USERNAME.github.io/REPOSITORY/
+#
+# It is kept here as documentation. GitHub only runs workflows found in
+# .github/workflows at the root of a repository, so this copy does nothing.
+name: Check and deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Check and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - name: Build
+        env:
+          # Project site: /REPOSITORY/   User site or custom domain: /
+          SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || format('/{0}/', github.event.repository.name) }}
+          VITE_FORMSPREE_FORM_ID: ${{ vars.VITE_FORMSPREE_FORM_ID }}
+          VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
+        run: npm run build
+      - name: Upload site artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

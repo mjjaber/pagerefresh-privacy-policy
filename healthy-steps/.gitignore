@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.log
+
+# Local environment files hold per-machine settings. Never commit them.
+.env
+.env.local
+.env.*.local
